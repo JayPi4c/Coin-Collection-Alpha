@@ -13,6 +13,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
@@ -58,6 +59,8 @@ public class Main extends JFrame implements ActionListener {
 	public static void main(String[] args) throws IOException {
 		preInit();
 
+		init();
+
 		Main Frame = new Main("CoinRegistry");
 		Frame.setSize(400, 400);
 		Frame.setLocationRelativeTo(null);
@@ -65,9 +68,9 @@ public class Main extends JFrame implements ActionListener {
 		Frame.setVisible(true);
 		groupButton();
 
-		init();
-
 	}
+
+	public static boolean Visibility = true;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Main(String title) {
@@ -76,54 +79,54 @@ public class Main extends JFrame implements ActionListener {
 		CountryBox = new JComboBox(countryNames);
 		CountryBox.setBounds(50, 50, 100, 20);
 		CountryBox.setSelectedIndex(1);
-		CountryBox.setVisible(false);
+		CountryBox.setVisible(Visibility);
 		CountryBox.addActionListener(this);
 		add(CountryBox);
 
 		YearBox = new JComboBox(Years);
 		YearBox.setBounds(50, 80, 100, 20);
 		YearBox.setSelectedIndex(0);
-		YearBox.setVisible(false);
+		YearBox.setVisible(Visibility);
 		YearBox.addActionListener(this);
 		add(YearBox);
 
 		ValueBox = new JComboBox(Values);
 		ValueBox.setBounds(50, 110, 100, 20);
 		ValueBox.setSelectedIndex(0);
-		ValueBox.setVisible(false);
+		ValueBox.setVisible(Visibility);
 		ValueBox.addActionListener(this);
 		add(ValueBox);
 
 		CheckStatusRB = new JRadioButton("Check Status", true);
 		CheckStatusRB.setBounds(180, 50, 150, 20);
-		CheckStatusRB.setVisible(false);
+		CheckStatusRB.setVisible(Visibility);
 		add(CheckStatusRB);
 
 		AddStatusRB = new JRadioButton("Add Status", false);
 		AddStatusRB.setBounds(180, 80, 150, 20);
-		AddStatusRB.setVisible(false);
+		AddStatusRB.setVisible(Visibility);
 		add(AddStatusRB);
 
 		RemoveStatusRB = new JRadioButton("Remove Status", false);
 		RemoveStatusRB.setBounds(180, 110, 150, 20);
-		RemoveStatusRB.setVisible(false);
+		RemoveStatusRB.setVisible(Visibility);
 		add(RemoveStatusRB);
 
 		confirm = new JButton("Confirm");
 		confirm.addActionListener(this);
 		confirm.setBounds(180, 180, 100, 20);
-		confirm.setVisible(false);
+		confirm.setVisible(Visibility);
 		add(confirm);
 
 		Exit = new JButton("Exit");
 		Exit.addActionListener(this);
 		Exit.setBounds(180, 220, 90, 20);
-		Exit.setVisible(false);
+		Exit.setVisible(Visibility);
 		add(Exit);
 
 		initProgressBar = new JProgressBar(SwingConstants.VERTICAL);
 		initProgressBar.setBounds(50, 300, 300, 15);
-		initProgressBar.setVisible(true);
+		initProgressBar.setVisible(!Visibility);
 		add(initProgressBar);
 
 	}
@@ -201,70 +204,100 @@ public class Main extends JFrame implements ActionListener {
 
 	/**
 	 * 
+	 * @return
+	 * 
+	 * @author http://stackoverflow.com/questions/2837263/how-do-i-get-the-directory-that-the-currently-executing-jar-file-is-in
+	 */
+	private static String GetExecutionPath() {
+		String absolutePath = new File(".").getAbsolutePath();
+		// System.out.println("absolute path: "+ absolutePath);
+		File file = new File(absolutePath);
+		absolutePath = file.getParentFile().toString();
+		return absolutePath;
+	}
+
+	/**
+	 * 
 	 * @throws IOException
 	 */
 	public static void init() throws IOException {
+		/*
+		 * File dataDir = new File(GetExecutionPath()+ "/data");
+		 * System.out.println(dataDir.getAbsolutePath()); if(!dataDir.exists()){
+		 * System.out.println(dataDir.getName() +" wird generiert!"); dataDir.mkdir();
+		 * }else { System.out.println(dataDir.getName() + " existiert"); }
+		 * 
+		 * File f = new File(GetExecutionPath()+ "/data/Example.txt");
+		 * System.out.println(f.getAbsolutePath()); if(!f.exists()){ f.createNewFile();
+		 * }else{ System.out.println(f.getName() + " existiert"); }
+		 */
 
-		File dataDir = new File("./data");
+		File dataDir = new File(GetExecutionPath() + "/data");
+		System.out.println(dataDir.getAbsolutePath());
 		if (!dataDir.exists()) {
+			System.out.println(dataDir.getName() + " wird generiert!");
 			dataDir.mkdir();
+		} else {
+			System.out.println(dataDir.getAbsolutePath() + " existiert bereits");
 		}
 
-		initProgressBar.setMinimum(0);
-		initProgressBar.setMaximum(18);
+		// initProgressBar.setMinimum(0);
+		// initProgressBar.setMaximum(18);
+
 		for (int i = 1999; i <= 2017; i++) {
-			File CoinRegistry = new File("./src/com/JayPi4c/resource/coinages" + i + ".co");
+			File CoinRegistry = new File(getPath(i));
 			if (!CoinRegistry.exists()) {
-				CoinRegistry.createNewFile();
-				genRegistry(i, getMembersFromYear(i));
+				// CoinRegistry.createNewFile();
+				genRegistry(CoinRegistry, i, getMembersFromYear(i));
+				System.out.println(CoinRegistry.getAbsolutePath() + ": generated");
 
 			} else {
-				BufferedReader CR = new BufferedReader(new FileReader(CoinRegistry));
-				String[] lines = new String[countries];
-				for (int j = 0; j < getMembersFromYear(i); j++) {
-					lines[j] = CR.readLine();
-					String[] str = lines[j].split(";");
-					if (str.length != 8) {
-						System.out.println("'Coinage" + i + ".co' is damaged and needs to reload ");
-						System.out.println("Please don't play with the systemfiles");
-						genRegistry(i, getMembersFromYear(i));
-					}
-				}
-				CR.close();
-				System.out.println("'coinages" + i + ".co' is accessible");
+				System.out.println("load: " + CoinRegistry.getAbsolutePath());
 			}
-
-			initProgressBar.setValue(i);
-			initProgressBar.setString(initProgressBar.getString());
 		}
 
-		if (initProgressBar.getString().equals("100%")) {
-			initProgressBar.setVisible(false);
+		/*
+		 * else{ BufferedReader CR = new BufferedReader(new FileReader(CoinRegistry));
+		 * String[] lines = new String [countries]; for(int j = 0; j <
+		 * getMembersFromYear(i); j++){ lines[j] = CR.readLine(); String[] str =
+		 * lines[j].split(";"); if(str.length != 8){
+		 * System.out.println("'Coinage"+i+".co' is damaged and needs to reload ");
+		 * System.out.println("Please don't play with the systemfiles"); genRegistry(i,
+		 * getMembersFromYear(i)); } } CR.close();
+		 * System.out.println("'coinages"+i+".co' is accessible"); }
+		 */
 
-			CountryBox.setVisible(true);
-			YearBox.setVisible(true);
-			ValueBox.setVisible(true);
-			CheckStatusRB.setVisible(true);
-			AddStatusRB.setVisible(true);
-			RemoveStatusRB.setVisible(true);
-			confirm.setVisible(true);
-			Exit.setVisible(true);
-		} else {
-			System.out.println("progressBar: " + initProgressBar.getString());
-			System.out.println("Oups, something went wrong; Pleaser contact developer!");
-		}
-
+		// initProgressBar.setValue(i);
+		// initProgressBar.setString(initProgressBar.getString());
 	}
 
-	public static void genRegistry(int year, int membersInYear) throws IOException {
-		File f = new File("./src/com/JayPi4c/resource/coinages" + year + ".co");
+	/*
+	 * if(initProgressBar.getString().equals("100%")){
+	 * initProgressBar.setVisible(false);
+	 * 
+	 * CountryBox.setVisible(true); YearBox.setVisible(true);
+	 * ValueBox.setVisible(true); CheckStatusRB.setVisible(true);
+	 * AddStatusRB.setVisible(true); RemoveStatusRB.setVisible(true);
+	 * confirm.setVisible(true); Exit.setVisible(true); } else{
+	 * System.out.println("progressBar: "+initProgressBar.getString());
+	 * System.out.println("Oups, something went wrong; Pleaser contact developer!");
+	 * }
+	 */
+
+	public static void genRegistry(File f, int year, int membersInYear) throws IOException {
+		// File f = new File(getPath(year));
+		System.out.println("Path: " + f.getAbsolutePath());
+		f.createNewFile();
+
 		FileWriter CoinFW = new FileWriter(f);
 		BufferedWriter CoinBFW = new BufferedWriter(CoinFW);
-
+		System.out.println("membersInYear: " + membersInYear);
 		System.out.println(membersInYear);
+
 		for (int i = 0; i < membersInYear; i++) { // loops through every country of the properties file
 			for (int j = 0; j < 2; j++) {
 				int k = (int) Math.pow(10, j);
+				System.out.println("k: " + k);
 				CoinBFW.write(i + "," + 0.01 * k + ",0;");
 				CoinBFW.write(i + "," + 0.02 * k + ",0;");
 				CoinBFW.write(i + "," + 0.05 * k + ",0;");
@@ -275,7 +308,10 @@ public class Main extends JFrame implements ActionListener {
 
 		}
 		CoinBFW.close();
-		System.out.println("creating 'coinages" + year + ".co': succesfully");
+		CoinFW.close();
+		JOptionPane.showOptionDialog(null, "creating 'coinages" + year + ".co': successfully", "Info",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, content[0]);
+		System.out.println("creating 'coinages" + year + ".co': successfully");
 	}
 
 	/**
@@ -302,7 +338,7 @@ public class Main extends JFrame implements ActionListener {
 			}
 		}
 
-		File CoinRegistry = new File("./src/com/JayPi4c/resource/coinages" + year + ".co");
+		File CoinRegistry = new File(getPath(year));
 		FileReader CoinFR = new FileReader(CoinRegistry);
 		BufferedReader CoinBR = new BufferedReader(CoinFR);
 
@@ -404,7 +440,7 @@ public class Main extends JFrame implements ActionListener {
 
 		int countryKey = countryKey(year, land);
 
-		File CoinRegistry = new File("./src/com/JayPi4c/resource/coinages" + year + ".co");
+		File CoinRegistry = new File(getPath(year));
 		FileReader CoinFR = new FileReader(CoinRegistry);
 		BufferedReader CoinBR = new BufferedReader(CoinFR);
 
@@ -443,6 +479,11 @@ public class Main extends JFrame implements ActionListener {
 			members = countries2015;
 
 		return members;
+	}
+
+	public static String getPath(int year) {
+		String path = GetExecutionPath() + "/data/coinages" + year + ".co";
+		return path;
 	}
 
 	public static int countryKey(int year, String land) {
