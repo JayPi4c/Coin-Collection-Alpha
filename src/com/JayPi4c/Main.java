@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -92,14 +93,18 @@ public class Main extends JFrame implements ActionListener {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
+		ImageIcon img = new ImageIcon("./src/com/JayPi4c/resource/Coin.png");
+		// ImageIcon img = new ImageIcon("./Coin.png");
+		frame.setIconImage(img.getImage());
+
 		groupButton();
 	}
 
 	public static void preInit() throws IOException {
 		try {
 			FileReader PropFR = new FileReader("./src/com/JayPi4c/resource/properties.prop");
-			// FileReader PropFR = new FileReader("./properties.prop"); //Pfad zur prop
-			// Datei im selben Ordner wie die .jar Datei
+			// FileReader PropFR = new FileReader("./properties.prop"); //Pfad
+			// zur prop Datei im selben Ordner wie die .jar Datei
 			BufferedReader PropBR = new BufferedReader(PropFR);
 			String[] lines = PropBR.readLine().split("//");
 			int linesOfProperties = Integer.parseInt(lines[0]);
@@ -230,7 +235,8 @@ public class Main extends JFrame implements ActionListener {
 				System.out.println("'coinages" + i + ".co' is accessible");
 
 			}
-			// System.out.println(CoinRegistry.getAbsolutePath() + ": accessible");
+			// System.out.println(CoinRegistry.getAbsolutePath() + ":
+			// accessible");
 		}
 
 	}
@@ -337,8 +343,8 @@ public class Main extends JFrame implements ActionListener {
 				System.out.println("Nothing will happen");
 		}
 
-		try { // egal welcher button gedrückt wird, immer wird der Gesamtwert der Sammlung in
-				// dem Featuretab aktualisiert
+		try { // egal welcher button gedrückt wird, immer wird der Gesamtwert
+				// der Sammlung in dem Featuretab aktualisiert
 			worth.setText("The Value is:" + String.valueOf(getWorth()));
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -370,11 +376,28 @@ public class Main extends JFrame implements ActionListener {
 	 */
 	public static void rescueData(File file, int year) throws IOException {
 
-		String[] fullDataInParts = new String[getMembersFromYear(year) * 8]; // erstelle einen String, der alle Daten
-																				// speichert, aufgeteilt in die Parts
-																				// jeder Zeile
-																				// jede Zeile(getMembersFromYear) mal
-																				// die Anzahl Parts, die jede Zeile
+		String[] fullDataInParts = new String[getMembersFromYear(year) * 8]; // erstelle
+																				// einen
+																				// String,
+																				// der
+																				// alle
+																				// Daten
+																				// speichert,
+																				// aufgeteilt
+																				// in
+																				// die
+																				// Parts
+																				// jeder
+																				// Zeile
+																				// jede
+																				// Zeile(getMembersFromYear)
+																				// mal
+																				// die
+																				// Anzahl
+																				// Parts,
+																				// die
+																				// jede
+																				// Zeile
 																				// hat(8)
 		// System.out.println("IndexSize: "+ fullDataInParts.length);
 		for (int i = 0; i < fullDataInParts.length; i++) {
@@ -394,7 +417,8 @@ public class Main extends JFrame implements ActionListener {
 			// System.out.println("null: " + textLine[i]);
 			if (textLine[i] != null && !textLine[i].equals("")) {
 				String[] contentOfLine = textLine[i].split(";");
-				for (int j = 0; j < contentOfLine.length; j++) {// loop durch jeden Part
+				for (int j = 0; j < contentOfLine.length; j++) {// loop durch
+																// jeden Part
 					String[] contentOfPart;
 					contentOfPart = contentOfLine[j].split(",");
 					if (contentOfPart.length == 3) {
@@ -403,8 +427,9 @@ public class Main extends JFrame implements ActionListener {
 						// (System.out.println("contentOfPart[1]: " +
 						// (getLineMultiplicator(Double.parseDouble(contentOfPart[1]))+1));
 						// System.out.println(contentOfLine[j]);
-						// Berechnung des Indexes: z = f(x,y) = (((x-1)*8)+y)-1, wobei x die Zeile ist
-						// und y der Part in der Zeile #lineMultiplicator
+						// Berechnung des Indexes: z = f(x,y) = (((x-1)*8)+y)-1,
+						// wobei x die Zeile ist und y der Part in der Zeile
+						// #lineMultiplicator
 						int indexPos = getIndexPos(Integer.parseInt(contentOfPart[0]) + 1,
 								(getLineMultiplicator(Double.parseDouble(contentOfPart[1])) + 1));
 						// System.out.println("IndexPosition: "+ indexPos);
@@ -431,7 +456,8 @@ public class Main extends JFrame implements ActionListener {
 		for (int i = 0; i < fullDataInParts.length; i++) {
 			BW.write(fullDataInParts[i]);
 			BW.write(";");
-			// System.out.println("fullDataInParts[" + i + "]: " + fullDataInParts[i]);
+			// System.out.println("fullDataInParts[" + i + "]: " +
+			// fullDataInParts[i]);
 			// System.out.println( (i+1) + "%8 = " + ((i+1)%8));
 			if ((i + 1) % 8 == 0)
 				BW.write(n);
@@ -574,7 +600,11 @@ public class Main extends JFrame implements ActionListener {
 
 		BufferedWriter CoinBW = new BufferedWriter(new FileWriter(file));
 
-		for (int i = 0; i < getMembersFromYear(year); i++) { // looped durch jedes Land, das in dem Jahr den Euro hatte
+		for (int i = 0; i < getMembersFromYear(year); i++) { // looped durch
+																// jedes Land,
+																// das in dem
+																// Jahr den Euro
+																// hatte
 			System.out.println("write in line " + (i + 1));
 			for (int j = 0; j < 2; j++) {
 				int k = (int) Math.pow(10, j);
@@ -599,9 +629,17 @@ public class Main extends JFrame implements ActionListener {
 		FileReader CoinFR = new FileReader(CoinRegistry);
 		BufferedReader CoinBR = new BufferedReader(CoinFR);
 
-		String[] line = new String[getMembersFromYear(year)]; // erstellen ein Array in der Größe der Anzahl der
-																// EuroStaaten des Jahres
-		for (int i = 0; i < getMembersFromYear(year); i++) { // fülle das Array mit jeder Zeile der angegebenen Datei
+		String[] line = new String[getMembersFromYear(year)]; // erstellen ein
+																// Array in der
+																// Größe der
+																// Anzahl der
+																// EuroStaaten
+																// des Jahres
+		for (int i = 0; i < getMembersFromYear(year); i++) { // fülle das Array
+																// mit jeder
+																// Zeile der
+																// angegebenen
+																// Datei
 			line[i] = CoinBR.readLine();
 		}
 		content = line[countryKey].split(";");
@@ -615,19 +653,22 @@ public class Main extends JFrame implements ActionListener {
 
 		String str = countryKey + "," + value + "," + content[2] + ";";
 		String out = "";
-		for (int i = 0; i < 8; i++) { // setze die einzelnen Teile der Zeile wieder zusammen
+		for (int i = 0; i < 8; i++) { // setze die einzelnen Teile der Zeile
+										// wieder zusammen
 			if (i == multiplicator) {
 				out = out + str;
 			} else
 				out = out + content_[i] + ";";
 		}
 
-		line[countryKey] = out; // line beinhaltet alle linien der Datei und nun wird die modifizierte Zeile
-								// wieder in diese "Liste" eingefügt
+		line[countryKey] = out; // line beinhaltet alle linien der Datei und nun
+								// wird die modifizierte Zeile wieder in diese
+								// "Liste" eingefügt
 		FileWriter CoinFW = new FileWriter(CoinRegistry);
 		BufferedWriter CoinBW = new BufferedWriter(CoinFW);
-		for (int i = 0; i < line.length; i++) { // loop durch jede Zeile der Datei und schreibe sie alle wieder in die
-												// Datei
+		for (int i = 0; i < line.length; i++) { // loop durch jede Zeile der
+												// Datei und schreibe sie alle
+												// wieder in die Datei
 			CoinBW.write(line[i]);
 			CoinBW.write(n);
 		}
@@ -645,8 +686,10 @@ public class Main extends JFrame implements ActionListener {
 		FileReader CoinFR = new FileReader(CoinRegistry);
 		BufferedReader CoinBR = new BufferedReader(CoinFR);
 
-		String[] line = new String[countryKey + 1]; // Arrays basieren auf einem index, der mit 0 beginnt, allerdings
-													// muss die größe die gesamte Zahl haben
+		String[] line = new String[countryKey + 1]; // Arrays basieren auf einem
+													// index, der mit 0 beginnt,
+													// allerdings muss die größe
+													// die gesamte Zahl haben
 		for (int i = 0; i <= countryKey; i++) {
 			line[i] = CoinBR.readLine();
 		}
